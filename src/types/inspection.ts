@@ -79,4 +79,13 @@ export interface RejectedItem {
   reason: string;
 }
 
+export interface SubmissionRecord {
+  id: string;
+  submitTime: string;
+  type: 'first' | 'resubmit';
+  editedMaterials: { id: string; name: string }[];
+  editedFields: { id: string; name: string }[];
+  note: string;
+}
+
 export type MaterialCategory = '证件类' | '办园条件类' | '师资类' | '安全卫生类';
