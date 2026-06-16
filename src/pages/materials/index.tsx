@@ -33,28 +33,42 @@ const MaterialsPage: React.FC = () => {
     }
   };
 
+  const goFilling = () => {
+    Taro.switchTab({ url: '/pages/filling/index' }).catch((err) => {
+      console.error('[MaterialsPage] Navigation error:', err);
+    });
+  };
+
   const handleSubmit = () => {
     if (missingCount > 0) {
       Taro.showModal({
         title: '⚠️ 还有材料缺失',
-        content: `您还有${missingCount}项材料缺失，建议补充完整后再提交。是否继续？`,
-        confirmText: '继续提交',
+        content: `您还有${missingCount}项材料缺失，建议补充完整后再提交。是否继续进入填报？`,
+        confirmText: '继续填报',
         cancelText: '去补充',
+        success: (res) => {
+          if (res.confirm) {
+            goFilling();
+          }
+        },
       });
       return;
     }
     if (pendingCount > 0) {
       Taro.showModal({
         title: '📋 还有材料未准备',
-        content: `您还有${pendingCount}项材料待准备，建议准备完整后再提交。`,
-        confirmText: '我知道了',
-        showCancel: false,
+        content: `您还有${pendingCount}项材料待准备，建议准备完整后再提交。是否继续进入填报？`,
+        confirmText: '继续填报',
+        cancelText: '去补充',
+        success: (res) => {
+          if (res.confirm) {
+            goFilling();
+          }
+        },
       });
       return;
     }
-    Taro.switchTab({ url: '/pages/progress/index' }).catch((err) => {
-      console.error('[MaterialsPage] Navigation error:', err);
-    });
+    goFilling();
   };
 
   return (

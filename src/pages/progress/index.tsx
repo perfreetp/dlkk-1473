@@ -1,17 +1,36 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 import { View, Text } from '@tarojs/components';
 import Taro from '@tarojs/taro';
 import { submissionInfo } from '@/data/submission';
+import { materials } from '@/data/materials';
 import { useInspectionStore } from '@/store/useInspectionStore';
 import { formFields } from '@/data/formFields';
 import styles from './index.module.scss';
 
+const mockRejectedItems = [
+  { fieldId: 'm4', fieldName: '消防安全检查合格证', reason: '证件照片模糊，请重新拍摄上传清晰的证件照片' },
+  { fieldId: 'm12', fieldName: '员工花名册', reason: '缺少幼儿园公章，请在纸质文件上盖章后重新拍照上传' },
+  { fieldId: 'f4', fieldName: '举办者联系电话', reason: '电话格式不正确，请输入11位手机号码' },
+];
+
 const ProgressPage: React.FC = () => {
-  const { submissionStatus, setSubmissionStatus, setRejectedItems, formAnswers } =
-    useInspectionStore();
+  const {
+    submissionStatus,
+    setSubmissionStatus,
+    setRejectedItems,
+    rejectedItems,
+    clearRejectedItem,
+    materialStatus,
+    submitDate,
+  } = useInspectionStore();
 
   const status = submissionStatus;
   const info = submissionInfo;
+
+  const doneMaterialCount = useMemo(
+    () => Object.values(materialStatus).filter((s) => s === 'done').length,
+    [materialStatus]
+  );
 
   const statusConfig: Record<
     string,
@@ -26,13 +45,15 @@ const ProgressPage: React.FC = () => {
     draft: {
       icon: '✏️',
       title: '填报中',
-      desc: `已完成${info.completedItems}/${info.totalItems}项，请继续填写`,
+      desc: `材料已准备${doneMaterialCount}/${materials.length}项，请继续完成`,
       heroClass: styles.statusHeroDraft,
     },
     submitted: {
       icon: '📤',
       title: '已提交审核',
-      desc: '教育部门正在审核您的申报材料，请耐心等待',
+      desc: submitDate
+        ? `${submitDate}已提交，教育部门正在审核，请耐心等待`
+        : '教育部门正在审核您的申报材料，请耐心等待',
       heroClass: styles.statusHeroSubmitted,
     },
     rejected: {
@@ -50,18 +71,18 @@ const ProgressPage: React.FC = () => {
   };
 
   const currentConfig = statusConfig[status];
-  const rejectedItems = info.rejectedItems;
 
   const handleFixItem = (fieldId: string) => {
     const isFormField = fieldId.startsWith('f');
+    clearRejectedItem(fieldId);
     if (isFormField) {
-      Taro.switchTab({ url: '/pages/filling/index' }).catch((err) => {
-        console.error('[ProgressPage] Navigation error:', err);
-      });
       const index = formFields.findIndex((f) => f.id === fieldId);
       if (index >= 0) {
         useInspectionStore.getState().setCurrentQuestionIndex(index);
       }
+      Taro.switchTab({ url: '/pages/filling/index' }).catch((err) => {
+        console.error('[ProgressPage] Navigation error:', err);
+      });
     } else {
       Taro.switchTab({ url: '/pages/materials/index' }).catch((err) => {
         console.error('[ProgressPage] Navigation error:', err);
@@ -72,18 +93,65 @@ const ProgressPage: React.FC = () => {
   const handleResubmit = () => {
     Taro.showModal({
       title: '📤 确认重新提交',
-      content: '修改完成后，确认重新提交年检申报吗？',
+      content: '修改完成后，确认重新提交年检申报吗？重新提交后退回项将清空。',
       confirmText: '确认提交',
       cancelText: '再检查',
       success: (res) => {
         if (res.confirm) {
           setSubmissionStatus('submitted');
           setRejectedItems([]);
-          Taro.showToast({ title: '提交成功', icon: 'success' });
+          Taro.showToast({ title: '✅ 重新提交成功', icon: 'none', duration: 2000 });
         }
       },
     });
   };
+
+  const handleSimulateReject = () => {
+    Taro.showModal({
+      title: '🔍 模拟审核退回',
+      content: '为了演示退回修改功能，将模拟教育部门退回材料，确认进入退回场景吗？',
+      confirmText: '演示退回',
+      cancelText: '取消',
+      success: (res) => {
+        if (res.confirm) {
+          setRejectedItems(mockRejectedItems);
+          setSubmissionStatus('rejected');
+          Taro.showToast({ title: '已退回，可查看原因', icon: 'none', duration: 2000 });
+        }
+      },
+    });
+  };
+
+  const handleSimulateApprove = () => {
+    Taro.showModal({
+      title: '✅ 模拟审核通过',
+      content: '确认模拟教育部门审核通过吗？',
+      confirmText: '通过',
+      cancelText: '取消',
+      success: (res) => {
+        if (res.confirm) {
+          setSubmissionStatus('approved');
+          Taro.showToast({ title: '审核通过！', icon: 'success' });
+        }
+      },
+    });
+  };
+
+  const showSimulationButtons = status === 'submitted';
+
+  const showSuccessCard = status === 'approved' || status === 'submitted';
+  const successCardConfig =
+    status === 'approved'
+      ? {
+          icon: '🎉',
+          title: '年检申报已通过！',
+          desc: `您的2026年度民办幼儿园年检申报已通过审核。请携带相关原件到${info.contactAddress}现场确认。`,
+        }
+      : {
+          icon: '📤',
+          title: '提交成功，等待审核',
+          desc: `您的2026年度民办幼儿园年检申报已成功提交。教育部门将在5-10个工作日内审核，请在"进度查询"中随时关注。如需加急，可拨打咨询电话。`,
+        };
 
   return (
     <View className={styles.container}>
@@ -101,15 +169,23 @@ const ProgressPage: React.FC = () => {
             <View className={styles.timelineLine} />
             <View className={styles.timelineContent}>
               <Text className={styles.timelineLabel}>准备材料</Text>
-              <Text className={styles.timelineDate}>已完成</Text>
+              <Text className={styles.timelineDate}>
+                {doneMaterialCount > 0 ? `已准备${doneMaterialCount}项` : '待开始'}
+              </Text>
             </View>
           </View>
           <View className={styles.timelineItem}>
-            <View className={`${styles.timelineDot} ${styles.timelineDotDone}`} />
+            <View
+              className={`${styles.timelineDot} ${
+                status !== 'not_started' ? styles.timelineDotDone : styles.timelineDot
+              }`}
+            />
             <View className={styles.timelineLine} />
             <View className={styles.timelineContent}>
               <Text className={styles.timelineLabel}>在线填报</Text>
-              <Text className={styles.timelineDate}>已完成</Text>
+              <Text className={styles.timelineDate}>
+                {status === 'not_started' ? '待开始' : status === 'draft' ? '填报中' : '已完成'}
+              </Text>
             </View>
           </View>
           <View className={styles.timelineItem}>
@@ -145,15 +221,38 @@ const ProgressPage: React.FC = () => {
             <View className={styles.timelineContent}>
               <Text className={styles.timelineLabel}>审核结果</Text>
               <Text className={styles.timelineDate}>
-                {status === 'approved' ? '已通过' : '等待中'}
+                {status === 'approved'
+                  ? '✅ 已通过'
+                  : status === 'rejected'
+                  ? '❌ 退回修改'
+                  : '等待中'}
               </Text>
             </View>
           </View>
         </View>
 
+        {showSimulationButtons && (
+          <View className={styles.simulateCard}>
+            <Text className={styles.simulateTitle}>🧪 功能演示</Text>
+            <Text className={styles.simulateDesc}>
+              以下按钮用于演示审核通过/退回场景，实际应用中由教育部门决定。
+            </Text>
+            <View className={styles.simulateBtns}>
+              <View className={styles.simulateBtnReject} onClick={handleSimulateReject}>
+                <Text className={styles.simulateBtnText}>🔍 模拟退回</Text>
+              </View>
+              <View className={styles.simulateBtnApprove} onClick={handleSimulateApprove}>
+                <Text className={styles.simulateBtnTextWhite}>✅ 模拟通过</Text>
+              </View>
+            </View>
+          </View>
+        )}
+
         {status === 'rejected' && rejectedItems.length > 0 && (
           <View className={styles.rejectedCard}>
-            <Text className={styles.rejectedTitle}>⚠️ 退回原因及修改建议</Text>
+            <Text className={styles.rejectedTitle}>
+              ⚠️ 退回原因及修改建议（共{rejectedItems.length}项）
+            </Text>
             {rejectedItems.map((item) => (
               <View key={item.fieldId} className={styles.rejectedItem}>
                 <Text className={styles.rejectedIcon}>❌</Text>
@@ -170,18 +269,27 @@ const ProgressPage: React.FC = () => {
               </View>
             ))}
             <View className={styles.resubmitBtn} onClick={handleResubmit}>
-              <Text className={styles.resubmitBtnText}>修改后重新提交</Text>
+              <Text className={styles.resubmitBtnText}>✅ 改完了，重新提交</Text>
             </View>
           </View>
         )}
 
-        {status === 'approved' && (
+        {status === 'rejected' && rejectedItems.length === 0 && (
           <View className={styles.successCard}>
-            <Text className={styles.successIcon}>🎉</Text>
-            <Text className={styles.successTitle}>年检申报已通过！</Text>
-            <Text className={styles.successDesc}>
-              您的{info.year}年度民办幼儿园年检申报已通过审核。请携带相关原件到现场确认。
-            </Text>
+            <Text className={styles.successIcon}>👍</Text>
+            <Text className={styles.successTitle}>所有问题已修改</Text>
+            <Text className={styles.successDesc}>退回项已全部处理完成，可重新提交审核。</Text>
+            <View className={styles.resubmitBtn} onClick={handleResubmit}>
+              <Text className={styles.resubmitBtnText}>重新提交审核</Text>
+            </View>
+          </View>
+        )}
+
+        {showSuccessCard && (
+          <View className={styles.successCard}>
+            <Text className={styles.successIcon}>{successCardConfig.icon}</Text>
+            <Text className={styles.successTitle}>{successCardConfig.title}</Text>
+            <Text className={styles.successDesc}>{successCardConfig.desc}</Text>
             <View className={styles.qrCodeBox}>
               <Text className={styles.qrCodeText}>
                 现场咨询二维码{'\n'}（扫码获取排队信息）

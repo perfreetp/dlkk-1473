@@ -1,7 +1,8 @@
-import React, { useMemo } from 'react';
+import React, { useMemo, useState, useEffect } from 'react';
 import { View, Text } from '@tarojs/components';
 import Taro from '@tarojs/taro';
 import { formFields } from '@/data/formFields';
+import { submissionInfo } from '@/data/submission';
 import { useInspectionStore } from '@/store/useInspectionStore';
 import FormQuestion from '@/components/FormQuestion';
 import ProgressBar from '@/components/ProgressBar';
@@ -15,7 +16,17 @@ const FillingPage: React.FC = () => {
     currentQuestionIndex,
     setCurrentQuestionIndex,
     voiceEnabled,
+    setSubmissionStatus,
+    submissionStatus,
   } = useInspectionStore();
+
+  const [showSuccess, setShowSuccess] = useState(false);
+
+  useEffect(() => {
+    if (submissionStatus === 'submitted' || submissionStatus === 'approved') {
+      setShowSuccess(true);
+    }
+  }, [submissionStatus]);
 
   const totalFields = formFields.length;
   const answeredCount = Object.keys(formAnswers).filter(
@@ -78,6 +89,12 @@ const FillingPage: React.FC = () => {
     }
   };
 
+  const doSubmit = () => {
+    setSubmissionStatus('submitted');
+    setShowSuccess(true);
+    Taro.showToast({ title: '✅ 提交成功', icon: 'none', duration: 1500 });
+  };
+
   const handleSubmit = () => {
     if (incompleteFields.length > 0) {
       Taro.showModal({
@@ -87,7 +104,7 @@ const FillingPage: React.FC = () => {
         cancelText: '去补填',
         success: (res) => {
           if (res.confirm) {
-            Taro.switchTab({ url: '/pages/progress/index' });
+            doSubmit();
           }
         },
       });
@@ -100,8 +117,7 @@ const FillingPage: React.FC = () => {
       cancelText: '再检查',
       success: (res) => {
         if (res.confirm) {
-          useInspectionStore.getState().setSubmissionStatus('submitted');
-          Taro.switchTab({ url: '/pages/progress/index' });
+          doSubmit();
         }
       },
     });
@@ -114,7 +130,54 @@ const FillingPage: React.FC = () => {
     }
   };
 
+  const goProgress = () => {
+    setShowSuccess(false);
+    Taro.switchTab({ url: '/pages/progress/index' });
+  };
+
   const error = currentField?.required ? validateField(currentField.id) : undefined;
+
+  if (showSuccess) {
+    return (
+      <View className={styles.successPage}>
+        <View className={styles.successContent}>
+          <Text className={styles.successBigIcon}>🎉</Text>
+          <Text className={styles.successBigTitle}>提交成功！</Text>
+          <Text className={styles.successBigDesc}>
+            您的2026年度民办幼儿园年检申报已提交给教育局审核。{'\n'}
+            通常在5-10个工作日内会有审核结果。{'\n'}
+            您可以在"进度查询"中随时查看。
+          </Text>
+          <View className={styles.qrCodeBox}>
+            <Text className={styles.qrCodeText}>
+              现场咨询二维码{'\n'}（扫码获取排队信息）
+            </Text>
+          </View>
+          <Text className={styles.qrCodeHint}>
+            如需到现场办理，请向工作人员出示此页面
+          </Text>
+          <View className={styles.successBtns}>
+            <View className={styles.successBtnPrimary} onClick={goProgress}>
+              <Text className={styles.successBtnText}>查看进度</Text>
+            </View>
+            <View
+              className={styles.successBtnOutline}
+              onClick={() => setShowSuccess(false)}
+            >
+              <Text className={styles.successBtnTextOutline}>返回修改</Text>
+            </View>
+          </View>
+          <View className={styles.successContact}>
+            <Text className={styles.successContactTitle}>📞 咨询方式</Text>
+            <Text className={styles.successContactText}>
+              电话：{submissionInfo.contactPhone}{'\n'}
+              地址：{submissionInfo.contactAddress}
+            </Text>
+          </View>
+        </View>
+      </View>
+    );
+  }
 
   return (
     <View className={styles.container}>
@@ -158,7 +221,7 @@ const FillingPage: React.FC = () => {
       )}
 
       <View className={styles.autoSaveTip}>
-        <Text className={styles.autoSaveText}>💾 填写内容已自动保存</Text>
+        <Text className={styles.autoSaveText}>💾 填写内容已自动保存（刷新也不丢失）</Text>
       </View>
 
       <View className={styles.navButtons}>

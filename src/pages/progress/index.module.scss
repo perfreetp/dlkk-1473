@@ -210,6 +210,7 @@
 .successIcon {
   font-size: 96rpx;
   margin-bottom: $spacing-lg;
+  display: block;
 }
 
 .successTitle {
@@ -217,6 +218,7 @@
   font-weight: $font-weight-bold;
   color: $color-success;
   margin-bottom: $spacing-md;
+  display: block;
 }
 
 .successDesc {
@@ -224,6 +226,8 @@
   color: $color-text-secondary;
   line-height: $line-height-loose;
   margin-bottom: $spacing-xl;
+  text-align: center;
+  display: block;
 }
 
 .qrCodeBox {
@@ -240,12 +244,14 @@
   font-size: $font-size-md;
   color: $color-text-tertiary;
   text-align: center;
+  line-height: $line-height-loose;
 }
 
 .qrCodeHint {
   font-size: $font-size-md;
   color: $color-text-secondary;
   line-height: $line-height-loose;
+  display: block;
 }
 
 .contactCard {
@@ -299,4 +305,74 @@
   font-size: 36rpx;
   font-weight: $font-weight-semibold;
   color: $color-text-white;
+}
+
+.simulateCard {
+  background: $color-warning-bg;
+  border-radius: $radius-lg;
+  padding: $spacing-lg;
+  margin-bottom: $spacing-md;
+  border: 4rpx dashed $color-warning;
+}
+
+.simulateTitle {
+  font-size: 34rpx;
+  font-weight: $font-weight-semibold;
+  color: $color-warning;
+  margin-bottom: $spacing-xs;
+}
+
+.simulateDesc {
+  font-size: $font-size-md;
+  color: $color-text-secondary;
+  line-height: $line-height-loose;
+  margin-bottom: $spacing-md;
+}
+
+.simulateBtns {
+  display: flex;
+  gap: $spacing-md;
+}
+
+.simulateBtnReject {
+  flex: 1;
+  height: 88rpx;
+  border-radius: $radius-button;
+  background: $color-bg-card;
+  border: 4rpx solid $color-warning;
+  @include flex-center;
+  transition: all $transition-base;
+
+  &:active {
+    opacity: 0.9;
+    transform: scale(0.98);
+  }
+}
+
+.simulateBtnApprove {
+  flex: 1;
+  height: 88rpx;
+  border-radius: $radius-button;
+  background: linear-gradient(135deg, $color-success 0%, $color-primary-light 100%);
+  @include flex-center;
+  transition: all $transition-base;
+
+  &:active {
+    opacity: 0.9;
+    transform: scale(0.98);
+  }
+}
+
+.simulateBtnText {
+  font-size: $font-size-md;
+  color: $color-warning;
+  font-weight: $font-weight-semibold;
+  white-space: nowrap;
+}
+
+.simulateBtnTextWhite {
+  font-size: $font-size-md;
+  color: $color-text-white;
+  font-weight: $font-weight-semibold;
+  white-space: nowrap;
 }
