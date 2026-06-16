@@ -1,0 +1,151 @@
+@use '@/styles/variables.scss' as *;
+
+.container {
+  min-height: 100vh;
+  background: $color-bg-page;
+  padding-bottom: 200rpx;
+}
+
+.header {
+  background: linear-gradient(135deg, $color-primary 0%, $color-primary-light 100%);
+  padding: $spacing-lg $spacing-lg $spacing-xl;
+}
+
+.headerTitle {
+  font-size: 38rpx;
+  font-weight: $font-weight-bold;
+  color: $color-text-white;
+  margin-bottom: $spacing-sm;
+}
+
+.headerDesc {
+  font-size: $font-size-md;
+  color: rgba(255, 255, 255, 0.85);
+}
+
+.tabBar {
+  display: flex;
+  background: $color-bg-card;
+  padding: $spacing-sm $spacing-sm 0;
+  box-shadow: $shadow-card;
+  overflow-x: auto;
+}
+
+.tab {
+  flex-shrink: 0;
+  padding: $spacing-sm $spacing-md;
+  margin-right: $spacing-xs;
+  border-radius: $radius-md $radius-md 0 0;
+  @include flex-center;
+  transition: all $transition-base;
+}
+
+.tabActive {
+  background: $color-bg-page;
+}
+
+.tabText {
+  font-size: $font-size-md;
+  color: $color-text-secondary;
+  white-space: nowrap;
+}
+
+.tabActive .tabText {
+  color: $color-primary;
+  font-weight: $font-weight-semibold;
+}
+
+.content {
+  padding: $spacing-md $spacing-lg;
+}
+
+.summaryBar {
+  position: fixed;
+  bottom: 120rpx;
+  left: 0;
+  right: 0;
+  background: $color-bg-card;
+  padding: $spacing-md $spacing-lg;
+  box-shadow: $shadow-float;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  z-index: 100;
+}
+
+.summaryLeft {
+  display: flex;
+  align-items: center;
+  gap: $spacing-md;
+}
+
+.summaryItem {
+  display: flex;
+  align-items: center;
+  gap: $spacing-xs;
+}
+
+.summaryDone {
+  color: $color-success;
+  font-size: $font-size-md;
+  font-weight: $font-weight-semibold;
+}
+
+.summaryPending {
+  color: $color-warning;
+  font-size: $font-size-md;
+  font-weight: $font-weight-semibold;
+}
+
+.summaryMissing {
+  color: $color-error;
+  font-size: $font-size-md;
+  font-weight: $font-weight-semibold;
+}
+
+.summaryLabel {
+  font-size: $font-size-sm;
+  color: $color-text-tertiary;
+}
+
+.submitBtn {
+  height: 80rpx;
+  padding: 0 $spacing-xl;
+  background: linear-gradient(135deg, $color-primary 0%, $color-primary-light 100%);
+  border-radius: $radius-button;
+  @include flex-center;
+  transition: all $transition-base;
+
+  &:active {
+    opacity: 0.9;
+    transform: scale(0.98);
+  }
+}
+
+.submitBtnText {
+  font-size: $font-size-md;
+  color: $color-text-white;
+  font-weight: $font-weight-semibold;
+  white-space: nowrap;
+}
+
+.assistantNote {
+  background: $color-warning-bg;
+  border-radius: $radius-md;
+  padding: $spacing-md;
+  margin: $spacing-md $spacing-lg;
+  display: flex;
+  align-items: flex-start;
+}
+
+.assistantIcon {
+  font-size: 28rpx;
+  margin-right: $spacing-sm;
+  flex-shrink: 0;
+}
+
+.assistantText {
+  font-size: $font-size-md;
+  color: $color-warning;
+  line-height: $line-height-loose;
+}

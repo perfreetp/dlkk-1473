@@ -1,0 +1,130 @@
+@use '@/styles/variables.scss' as *;
+
+.container {
+  min-height: 100vh;
+  background: $color-bg-page;
+  padding: $spacing-lg;
+  padding-bottom: 240rpx;
+}
+
+.progressSection {
+  margin-bottom: $spacing-lg;
+}
+
+.questionCard {
+  margin-bottom: $spacing-lg;
+}
+
+.navButtons {
+  position: fixed;
+  bottom: 120rpx;
+  left: 0;
+  right: 0;
+  display: flex;
+  gap: $spacing-md;
+  padding: $spacing-md $spacing-lg;
+  background: $color-bg-card;
+  box-shadow: $shadow-float;
+  z-index: 100;
+}
+
+.navBtn {
+  flex: 1;
+  height: 96rpx;
+  border-radius: $radius-button;
+  @include flex-center;
+  transition: all $transition-base;
+
+  &:active {
+    opacity: 0.9;
+    transform: scale(0.98);
+  }
+}
+
+.navBtnPrev {
+  background: $color-bg-hover;
+  border: 4rpx solid $color-border;
+}
+
+.navBtnNext {
+  background: linear-gradient(135deg, $color-primary 0%, $color-primary-light 100%);
+}
+
+.navBtnSubmit {
+  background: linear-gradient(135deg, $color-accent 0%, $color-accent-light 100%);
+}
+
+.navBtnDisabled {
+  opacity: 0.5;
+  pointer-events: none;
+}
+
+.navBtnText {
+  font-size: $font-size-lg;
+  font-weight: $font-weight-semibold;
+  color: $color-text-white;
+  white-space: nowrap;
+}
+
+.navBtnPrev .navBtnText {
+  color: $color-text-secondary;
+}
+
+.incompleteSection {
+  background: $color-bg-card;
+  border-radius: $radius-lg;
+  padding: $spacing-lg;
+  box-shadow: $shadow-card;
+  margin-bottom: $spacing-lg;
+}
+
+.incompleteTitle {
+  font-size: 34rpx;
+  font-weight: $font-weight-semibold;
+  color: $color-warning;
+  margin-bottom: $spacing-md;
+}
+
+.incompleteItem {
+  display: flex;
+  align-items: center;
+  padding: $spacing-sm 0;
+  border-bottom: 2rpx solid $color-divider;
+
+  &:last-child {
+    border-bottom: none;
+  }
+}
+
+.incompleteDot {
+  width: 16rpx;
+  height: 16rpx;
+  border-radius: $radius-round;
+  background: $color-warning;
+  margin-right: $spacing-sm;
+  flex-shrink: 0;
+}
+
+.incompleteText {
+  font-size: $font-size-md;
+  color: $color-text-primary;
+  line-height: $line-height-loose;
+  flex: 1;
+}
+
+.incompleteAction {
+  font-size: $font-size-sm;
+  color: $color-primary;
+  font-weight: $font-weight-medium;
+  white-space: nowrap;
+}
+
+.autoSaveTip {
+  @include flex-center;
+  padding: $spacing-sm;
+}
+
+.autoSaveText {
+  font-size: $font-size-xs;
+  color: $color-text-tertiary;
+}

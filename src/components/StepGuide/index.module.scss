@@ -1,0 +1,72 @@
+@use '@/styles/variables.scss' as *;
+
+.container {
+  display: flex;
+  flex-direction: column;
+}
+
+.stepWrapper {
+  display: flex;
+  flex-direction: column;
+}
+
+.stepItem {
+  display: flex;
+  align-items: flex-start;
+  background: $color-bg-card;
+  border-radius: $radius-lg;
+  padding: $spacing-lg;
+  box-shadow: $shadow-card;
+  border: 4rpx solid transparent;
+  transition: all $transition-base;
+}
+
+.stepItem.active {
+  border-color: $color-primary;
+}
+
+.stepItem.completed {
+  border-color: $color-success;
+  background: rgba($color-success, 0.05);
+}
+
+.stepIcon {
+  width: 80rpx;
+  height: 80rpx;
+  @include flex-center;
+  margin-right: $spacing-lg;
+  flex-shrink: 0;
+}
+
+.stepEmoji {
+  font-size: 48rpx;
+}
+
+.stepContent {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+.stepTitle {
+  font-size: 34rpx;
+  font-weight: $font-weight-semibold;
+  color: $color-text-primary;
+  margin-bottom: $spacing-xs;
+}
+
+.stepDesc {
+  font-size: $font-size-md;
+  color: $color-text-secondary;
+  line-height: $line-height-loose;
+}
+
+.connector {
+  @include flex-center;
+  padding: $spacing-sm 0;
+}
+
+.arrow {
+  font-size: 28rpx;
+  color: $color-primary;
+}

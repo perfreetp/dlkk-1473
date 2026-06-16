@@ -1,0 +1,281 @@
+@use '@/styles/variables.scss' as *;
+
+.container {
+  min-height: 100vh;
+  background: $color-bg-page;
+  padding-bottom: $spacing-xl;
+}
+
+.header {
+  background: linear-gradient(135deg, $color-primary 0%, $color-primary-light 100%);
+  padding: $spacing-lg $spacing-lg $spacing-xl;
+}
+
+.headerTitle {
+  font-size: 38rpx;
+  font-weight: $font-weight-bold;
+  color: $color-text-white;
+  margin-bottom: $spacing-sm;
+}
+
+.headerDesc {
+  font-size: $font-size-md;
+  color: rgba(255, 255, 255, 0.85);
+  line-height: $line-height-loose;
+}
+
+.settingsCard {
+  background: $color-bg-card;
+  border-radius: $radius-lg;
+  padding: $spacing-lg;
+  margin: $spacing-md $spacing-lg;
+  box-shadow: $shadow-card;
+}
+
+.settingsTitle {
+  font-size: 34rpx;
+  font-weight: $font-weight-semibold;
+  color: $color-text-primary;
+  margin-bottom: $spacing-md;
+}
+
+.settingRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: $spacing-md 0;
+  border-bottom: 2rpx solid $color-divider;
+
+  &:last-child {
+    border-bottom: none;
+  }
+}
+
+.settingLabel {
+  font-size: $font-size-lg;
+  color: $color-text-primary;
+}
+
+.settingDesc {
+  font-size: $font-size-sm;
+  color: $color-text-tertiary;
+  margin-top: $spacing-xs;
+}
+
+.toggleBtn {
+  padding: $spacing-sm $spacing-md;
+  border-radius: $radius-button;
+  @include flex-center;
+  min-width: 120rpx;
+  height: 64rpx;
+}
+
+.toggleOn {
+  background: $color-primary;
+}
+
+.toggleOff {
+  background: $color-bg-hover;
+  border: 4rpx solid $color-border;
+}
+
+.toggleText {
+  font-size: $font-size-md;
+  font-weight: $font-weight-medium;
+  white-space: nowrap;
+}
+
+.toggleOn .toggleText {
+  color: $color-text-white;
+}
+
+.toggleOff .toggleText {
+  color: $color-text-secondary;
+}
+
+.speedBtns {
+  display: flex;
+  gap: $spacing-sm;
+}
+
+.speedBtn {
+  padding: $spacing-sm $spacing-md;
+  border-radius: $radius-button;
+  @include flex-center;
+  height: 64rpx;
+  min-width: 100rpx;
+}
+
+.speedBtnActive {
+  background: $color-primary;
+}
+
+.speedBtnNormal {
+  background: $color-bg-hover;
+  border: 4rpx solid $color-border;
+}
+
+.speedBtnText {
+  font-size: $font-size-md;
+  font-weight: $font-weight-medium;
+  white-space: nowrap;
+}
+
+.speedBtnActive .speedBtnText {
+  color: $color-text-white;
+}
+
+.speedBtnNormal .speedBtnText {
+  color: $color-text-secondary;
+}
+
+.section {
+  margin: $spacing-md $spacing-lg;
+}
+
+.sectionHeader {
+  font-size: 34rpx;
+  font-weight: $font-weight-semibold;
+  color: $color-text-primary;
+  margin-bottom: $spacing-md;
+}
+
+.faqCard {
+  background: $color-bg-card;
+  border-radius: $radius-lg;
+  box-shadow: $shadow-card;
+  overflow: hidden;
+  margin-bottom: $spacing-md;
+}
+
+.faqQuestion {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: $spacing-lg;
+}
+
+.faqQuestionText {
+  font-size: 34rpx;
+  font-weight: $font-weight-medium;
+  color: $color-text-primary;
+  flex: 1;
+  line-height: $line-height-loose;
+}
+
+.faqPlayBtn {
+  width: 80rpx;
+  height: 80rpx;
+  border-radius: $radius-round;
+  background: rgba($color-primary, 0.1);
+  @include flex-center;
+  flex-shrink: 0;
+  margin-left: $spacing-sm;
+  transition: all $transition-base;
+
+  &:active {
+    opacity: 0.9;
+    transform: scale(0.95);
+  }
+}
+
+.faqPlayIcon {
+  font-size: 36rpx;
+}
+
+.faqAnswer {
+  padding: 0 $spacing-lg $spacing-lg;
+  border-top: 2rpx solid $color-divider;
+  padding-top: $spacing-md;
+}
+
+.faqAnswerText {
+  font-size: $font-size-lg;
+  color: $color-text-secondary;
+  line-height: $line-height-loose;
+}
+
+.assistantCard {
+  background: $color-warning-bg;
+  border-radius: $radius-lg;
+  padding: $spacing-lg;
+  margin: $spacing-md $spacing-lg;
+}
+
+.assistantTitle {
+  font-size: 34rpx;
+  font-weight: $font-weight-semibold;
+  color: $color-warning;
+  margin-bottom: $spacing-md;
+}
+
+.assistantStep {
+  display: flex;
+  align-items: flex-start;
+  margin-bottom: $spacing-md;
+
+  &:last-child {
+    margin-bottom: 0;
+  }
+}
+
+.assistantStepNum {
+  width: 48rpx;
+  height: 48rpx;
+  border-radius: $radius-round;
+  background: $color-accent;
+  @include flex-center;
+  margin-right: $spacing-md;
+  flex-shrink: 0;
+}
+
+.assistantStepText {
+  font-size: $font-size-xs;
+  color: $color-text-white;
+  font-weight: $font-weight-bold;
+}
+
+.assistantStepContent {
+  font-size: $font-size-lg;
+  color: $color-text-primary;
+  line-height: $line-height-loose;
+  flex: 1;
+  padding-top: 4rpx;
+}
+
+.categoryTabs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: $spacing-sm;
+  margin-bottom: $spacing-md;
+}
+
+.categoryTab {
+  padding: $spacing-sm $spacing-md;
+  border-radius: $radius-button;
+  @include flex-center;
+  height: 64rpx;
+}
+
+.categoryTabActive {
+  background: $color-primary;
+}
+
+.categoryTabNormal {
+  background: $color-bg-hover;
+  border: 4rpx solid $color-border;
+}
+
+.categoryTabText {
+  font-size: $font-size-sm;
+  font-weight: $font-weight-medium;
+  white-space: nowrap;
+}
+
+.categoryTabActive .categoryTabText {
+  color: $color-text-white;
+}
+
+.categoryTabNormal .categoryTabText {
+  color: $color-text-secondary;
+}

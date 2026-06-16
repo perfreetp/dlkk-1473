@@ -1,0 +1,183 @@
+@use '@/styles/variables.scss' as *;
+
+.container {
+  min-height: 100vh;
+  background: $color-bg-page;
+  padding-bottom: $spacing-xl;
+}
+
+.heroSection {
+  background: linear-gradient(180deg, $color-primary 0%, $color-primary-light 100%);
+  padding: $spacing-xl $spacing-lg $spacing-xl;
+  border-radius: 0 0 $radius-xl $radius-xl;
+}
+
+.heroTitle {
+  font-size: 48rpx;
+  font-weight: $font-weight-bold;
+  color: $color-text-white;
+  text-align: center;
+  margin-bottom: $spacing-md;
+}
+
+.heroSubtitle {
+  font-size: $font-size-lg;
+  color: rgba(255, 255, 255, 0.85);
+  text-align: center;
+  margin-bottom: $spacing-xl;
+}
+
+.timeCard {
+  background: rgba(255, 255, 255, 0.2);
+  border-radius: $radius-lg;
+  padding: $spacing-lg;
+  margin-bottom: $spacing-lg;
+}
+
+.timeLabel {
+  font-size: $font-size-md;
+  color: rgba(255, 255, 255, 0.9);
+  margin-bottom: $spacing-sm;
+}
+
+.timeValue {
+  font-size: 44rpx;
+  font-weight: $font-weight-bold;
+  color: $color-text-white;
+  text-align: center;
+  margin-bottom: $spacing-sm;
+}
+
+.timeRange {
+  font-size: $font-size-md;
+  color: rgba(255, 255, 255, 0.85);
+  text-align: center;
+}
+
+.countdown {
+  background: rgba(255, 255, 255, 0.15);
+  border-radius: $radius-md;
+  padding: $spacing-sm $spacing-md;
+  margin-top: $spacing-md;
+  @include flex-center;
+}
+
+.countdownText {
+  font-size: $font-size-lg;
+  font-weight: $font-weight-semibold;
+  color: #FFF3E8;
+}
+
+.content {
+  padding: 0 $spacing-lg;
+  margin-top: -$spacing-lg;
+}
+
+.section {
+  margin-bottom: $spacing-lg;
+}
+
+.sectionTitle {
+  font-size: 38rpx;
+  font-weight: $font-weight-semibold;
+  color: $color-text-primary;
+  margin-bottom: $spacing-md;
+  padding-left: $spacing-sm;
+}
+
+.conditionList {
+  background: $color-bg-card;
+  border-radius: $radius-lg;
+  box-shadow: $shadow-card;
+  overflow: hidden;
+}
+
+.conditionItem {
+  display: flex;
+  align-items: center;
+  padding: $spacing-lg;
+  border-bottom: 2rpx solid $color-divider;
+
+  &:last-child {
+    border-bottom: none;
+  }
+}
+
+.conditionIcon {
+  font-size: 36rpx;
+  margin-right: $spacing-md;
+  flex-shrink: 0;
+}
+
+.conditionText {
+  font-size: 34rpx;
+  color: $color-text-primary;
+  line-height: $line-height-loose;
+  flex: 1;
+}
+
+.conditionMet {
+  color: $color-success;
+}
+
+.conditionNotMet {
+  color: $color-error;
+}
+
+.actionButtons {
+  display: flex;
+  flex-direction: column;
+  gap: $spacing-md;
+  margin-top: $spacing-lg;
+}
+
+.actionBtn {
+  width: 100%;
+  height: 108rpx;
+  border-radius: $radius-button;
+  @include flex-center;
+  transition: all $transition-base;
+
+  &:active {
+    opacity: 0.9;
+    transform: scale(0.98);
+  }
+}
+
+.actionBtnPrimary {
+  background: linear-gradient(135deg, $color-primary 0%, $color-primary-light 100%);
+}
+
+.actionBtnAccent {
+  background: linear-gradient(135deg, $color-accent 0%, $color-accent-light 100%);
+}
+
+.actionBtnOutline {
+  background: $color-bg-card;
+  border: 4rpx solid $color-primary;
+}
+
+.actionBtnText {
+  font-size: 36rpx;
+  font-weight: $font-weight-semibold;
+  color: $color-text-white;
+}
+
+.actionBtnOutline .actionBtnText {
+  color: $color-primary;
+}
+
+.helpNote {
+  background: $color-warning-bg;
+  border-radius: $radius-md;
+  padding: $spacing-md;
+  margin-top: $spacing-lg;
+  @include flex-center;
+}
+
+.helpNoteText {
+  font-size: $font-size-md;
+  color: $color-warning;
+  text-align: center;
+  line-height: $line-height-loose;
+}

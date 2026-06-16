@@ -1,0 +1,54 @@
+@use '@/styles/variables.scss' as *;
+
+.button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba($color-primary, 0.08);
+  border-radius: $radius-button;
+  transition: all $transition-base;
+
+  &:active {
+    opacity: 0.9;
+    transform: scale(0.98);
+  }
+}
+
+.small {
+  padding: $spacing-xs $spacing-sm;
+  height: 56rpx;
+}
+
+.medium {
+  padding: $spacing-sm $spacing-md;
+  height: 72rpx;
+}
+
+.large {
+  padding: $spacing-sm $spacing-lg;
+  height: 88rpx;
+}
+
+.icon {
+  font-size: 28rpx;
+  margin-right: $spacing-xs;
+}
+
+.small .icon {
+  font-size: 24rpx;
+}
+
+.large .icon {
+  font-size: 32rpx;
+}
+
+.label {
+  font-size: $font-size-sm;
+  color: $color-primary;
+  font-weight: $font-weight-medium;
+  white-space: nowrap;
+}
+
+.large .label {
+  font-size: $font-size-md;
+}

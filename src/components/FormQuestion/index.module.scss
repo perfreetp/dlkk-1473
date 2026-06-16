@@ -1,0 +1,165 @@
+@use '@/styles/variables.scss' as *;
+
+.container {
+  background: $color-bg-card;
+  border-radius: $radius-lg;
+  padding: $spacing-xl;
+  box-shadow: $shadow-card;
+}
+
+.questionRow {
+  display: flex;
+  align-items: flex-start;
+  margin-bottom: $spacing-md;
+}
+
+.question {
+  font-size: 38rpx;
+  font-weight: $font-weight-semibold;
+  color: $color-text-primary;
+  line-height: $line-height-loose;
+  flex: 1;
+}
+
+.required {
+  font-size: 40rpx;
+  color: $color-error;
+  margin-left: $spacing-xs;
+  line-height: 1;
+}
+
+.voiceHint {
+  display: flex;
+  align-items: center;
+  background: rgba($color-primary, 0.08);
+  border-radius: $radius-button;
+  padding: $spacing-sm $spacing-lg;
+  margin-bottom: $spacing-lg;
+  height: 80rpx;
+}
+
+.voiceIcon {
+  font-size: 32rpx;
+  margin-right: $spacing-sm;
+}
+
+.voiceText {
+  font-size: $font-size-md;
+  color: $color-primary;
+  font-weight: $font-weight-medium;
+}
+
+.input {
+  width: 100%;
+  height: 96rpx;
+  border: 4rpx solid $color-border;
+  border-radius: $radius-md;
+  padding: 0 $spacing-lg;
+  font-size: $font-size-lg;
+  color: $color-text-primary;
+  box-sizing: border-box;
+  background: $color-bg-card;
+}
+
+.inputError {
+  border-color: $color-error;
+}
+
+.placeholder {
+  color: $color-text-tertiary;
+}
+
+.textareaWrapper {
+  width: 100%;
+}
+
+.textarea {
+  width: 100%;
+  min-height: 200rpx;
+  border: 4rpx solid $color-border;
+  border-radius: $radius-md;
+  padding: $spacing-lg;
+  font-size: $font-size-lg;
+  color: $color-text-primary;
+  box-sizing: border-box;
+  background: $color-bg-card;
+}
+
+.selectBox {
+  width: 100%;
+  height: 96rpx;
+  border: 4rpx solid $color-border;
+  border-radius: $radius-md;
+  padding: 0 $spacing-lg;
+  font-size: $font-size-lg;
+  color: $color-text-primary;
+  box-sizing: border-box;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: $color-bg-card;
+}
+
+.selectArrow {
+  font-size: $font-size-sm;
+  color: $color-text-tertiary;
+}
+
+.photoBox {
+  width: 100%;
+}
+
+.photoPlaceholder {
+  width: 100%;
+  height: 240rpx;
+  border: 4rpx dashed $color-border;
+  border-radius: $radius-md;
+  @include flex-center;
+  flex-direction: column;
+  background: $color-bg-hover;
+}
+
+.photoIcon {
+  font-size: 64rpx;
+  margin-bottom: $spacing-sm;
+}
+
+.photoText {
+  font-size: $font-size-md;
+  color: $color-text-tertiary;
+}
+
+.photoPreview {
+  width: 100%;
+  height: 240rpx;
+  border: 4rpx solid $color-success;
+  border-radius: $radius-md;
+  @include flex-center;
+  background: rgba($color-success, 0.05);
+}
+
+.photoOk {
+  font-size: $font-size-lg;
+  color: $color-success;
+  font-weight: $font-weight-semibold;
+}
+
+.errorBox {
+  display: flex;
+  align-items: flex-start;
+  background: $color-error-bg;
+  border-radius: $radius-md;
+  padding: $spacing-sm $spacing-md;
+  margin-top: $spacing-sm;
+}
+
+.errorIcon {
+  font-size: 28rpx;
+  margin-right: $spacing-xs;
+}
+
+.errorText {
+  font-size: $font-size-md;
+  color: $color-error;
+  line-height: $line-height-loose;
+}

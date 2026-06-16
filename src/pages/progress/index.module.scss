@@ -1,0 +1,302 @@
+@use '@/styles/variables.scss' as *;
+
+.container {
+  min-height: 100vh;
+  background: $color-bg-page;
+  padding-bottom: $spacing-xl;
+}
+
+.statusHero {
+  padding: $spacing-xl $spacing-lg;
+  text-align: center;
+}
+
+.statusHeroDraft {
+  background: linear-gradient(135deg, $color-warning 0%, $color-accent-light 100%);
+}
+
+.statusHeroSubmitted {
+  background: linear-gradient(135deg, $color-primary 0%, $color-primary-light 100%);
+}
+
+.statusHeroRejected {
+  background: linear-gradient(135deg, $color-error 0%, #FF7070 100%);
+}
+
+.statusHeroApproved {
+  background: linear-gradient(135deg, $color-success 0%, $color-primary-light 100%);
+}
+
+.statusIcon {
+  font-size: 80rpx;
+  margin-bottom: $spacing-md;
+}
+
+.statusTitle {
+  font-size: 44rpx;
+  font-weight: $font-weight-bold;
+  color: $color-text-white;
+  margin-bottom: $spacing-sm;
+}
+
+.statusDesc {
+  font-size: $font-size-lg;
+  color: rgba(255, 255, 255, 0.85);
+  line-height: $line-height-loose;
+}
+
+.content {
+  padding: 0 $spacing-lg;
+  margin-top: -$spacing-md;
+}
+
+.timelineCard {
+  background: $color-bg-card;
+  border-radius: $radius-lg;
+  padding: $spacing-lg;
+  box-shadow: $shadow-card;
+  margin-bottom: $spacing-md;
+}
+
+.timelineTitle {
+  font-size: 34rpx;
+  font-weight: $font-weight-semibold;
+  color: $color-text-primary;
+  margin-bottom: $spacing-lg;
+}
+
+.timelineItem {
+  display: flex;
+  align-items: flex-start;
+  margin-bottom: $spacing-lg;
+  position: relative;
+
+  &:last-child {
+    margin-bottom: 0;
+  }
+}
+
+.timelineDot {
+  width: 24rpx;
+  height: 24rpx;
+  border-radius: $radius-round;
+  background: $color-border;
+  margin-right: $spacing-md;
+  flex-shrink: 0;
+  margin-top: 8rpx;
+}
+
+.timelineDotActive {
+  background: $color-primary;
+}
+
+.timelineDotDone {
+  background: $color-success;
+}
+
+.timelineDotError {
+  background: $color-error;
+}
+
+.timelineLine {
+  position: absolute;
+  left: 11rpx;
+  top: 32rpx;
+  width: 2rpx;
+  height: 60rpx;
+  background: $color-border;
+}
+
+.timelineContent {
+  flex: 1;
+}
+
+.timelineLabel {
+  font-size: $font-size-lg;
+  color: $color-text-primary;
+  font-weight: $font-weight-medium;
+  margin-bottom: $spacing-xs;
+}
+
+.timelineDate {
+  font-size: $font-size-sm;
+  color: $color-text-tertiary;
+}
+
+.rejectedCard {
+  background: $color-bg-card;
+  border-radius: $radius-lg;
+  padding: $spacing-lg;
+  box-shadow: $shadow-card;
+  margin-bottom: $spacing-md;
+  border: 4rpx solid $color-error;
+}
+
+.rejectedTitle {
+  font-size: 34rpx;
+  font-weight: $font-weight-semibold;
+  color: $color-error;
+  margin-bottom: $spacing-md;
+}
+
+.rejectedItem {
+  display: flex;
+  align-items: flex-start;
+  padding: $spacing-md;
+  background: $color-error-bg;
+  border-radius: $radius-md;
+  margin-bottom: $spacing-sm;
+
+  &:last-child {
+    margin-bottom: 0;
+  }
+}
+
+.rejectedIcon {
+  font-size: 28rpx;
+  margin-right: $spacing-sm;
+  flex-shrink: 0;
+}
+
+.rejectedInfo {
+  flex: 1;
+}
+
+.rejectedFieldName {
+  font-size: $font-size-lg;
+  color: $color-error;
+  font-weight: $font-weight-semibold;
+  margin-bottom: $spacing-xs;
+}
+
+.rejectedReason {
+  font-size: $font-size-md;
+  color: $color-text-secondary;
+  line-height: $line-height-loose;
+}
+
+.rejectedAction {
+  padding: $spacing-sm $spacing-md;
+  background: $color-primary;
+  border-radius: $radius-button;
+  @include flex-center;
+  height: 64rpx;
+  flex-shrink: 0;
+  margin-left: $spacing-sm;
+  transition: all $transition-base;
+
+  &:active {
+    opacity: 0.9;
+    transform: scale(0.98);
+  }
+}
+
+.rejectedActionText {
+  font-size: $font-size-sm;
+  color: $color-text-white;
+  font-weight: $font-weight-medium;
+  white-space: nowrap;
+}
+
+.successCard {
+  background: $color-bg-card;
+  border-radius: $radius-lg;
+  padding: $spacing-xl;
+  box-shadow: $shadow-card;
+  margin-bottom: $spacing-md;
+  text-align: center;
+}
+
+.successIcon {
+  font-size: 96rpx;
+  margin-bottom: $spacing-lg;
+}
+
+.successTitle {
+  font-size: 40rpx;
+  font-weight: $font-weight-bold;
+  color: $color-success;
+  margin-bottom: $spacing-md;
+}
+
+.successDesc {
+  font-size: $font-size-lg;
+  color: $color-text-secondary;
+  line-height: $line-height-loose;
+  margin-bottom: $spacing-xl;
+}
+
+.qrCodeBox {
+  width: 300rpx;
+  height: 300rpx;
+  border: 4rpx dashed $color-border;
+  border-radius: $radius-lg;
+  @include flex-center;
+  margin: 0 auto $spacing-lg;
+  background: $color-bg-hover;
+}
+
+.qrCodeText {
+  font-size: $font-size-md;
+  color: $color-text-tertiary;
+  text-align: center;
+}
+
+.qrCodeHint {
+  font-size: $font-size-md;
+  color: $color-text-secondary;
+  line-height: $line-height-loose;
+}
+
+.contactCard {
+  background: $color-bg-card;
+  border-radius: $radius-lg;
+  padding: $spacing-lg;
+  box-shadow: $shadow-card;
+  margin-bottom: $spacing-md;
+}
+
+.contactTitle {
+  font-size: 34rpx;
+  font-weight: $font-weight-semibold;
+  color: $color-text-primary;
+  margin-bottom: $spacing-md;
+}
+
+.contactItem {
+  display: flex;
+  align-items: center;
+  padding: $spacing-sm 0;
+}
+
+.contactIcon {
+  font-size: 28rpx;
+  margin-right: $spacing-sm;
+}
+
+.contactText {
+  font-size: $font-size-lg;
+  color: $color-text-primary;
+  line-height: $line-height-loose;
+}
+
+.resubmitBtn {
+  width: 100%;
+  height: 108rpx;
+  border-radius: $radius-button;
+  @include flex-center;
+  background: linear-gradient(135deg, $color-primary 0%, $color-primary-light 100%);
+  margin-top: $spacing-lg;
+  transition: all $transition-base;
+
+  &:active {
+    opacity: 0.9;
+    transform: scale(0.98);
+  }
+}
+
+.resubmitBtnText {
+  font-size: 36rpx;
+  font-weight: $font-weight-semibold;
+  color: $color-text-white;
+}
