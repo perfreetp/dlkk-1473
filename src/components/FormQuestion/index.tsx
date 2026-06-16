@@ -10,6 +10,7 @@ interface FormQuestionProps {
   onChange: (id: string, value: string) => void;
   onVoiceTip: (tip: string) => void;
   error?: string;
+  focused?: boolean;
 }
 
 const FormQuestion: React.FC<FormQuestionProps> = ({
@@ -18,6 +19,7 @@ const FormQuestion: React.FC<FormQuestionProps> = ({
   onChange,
   onVoiceTip,
   error,
+  focused,
 }) => {
   const handleSelectChange = (e) => {
     const index = e.detail.value;
@@ -27,7 +29,11 @@ const FormQuestion: React.FC<FormQuestionProps> = ({
   };
 
   return (
-    <View className={styles.container}>
+    <View
+      id={`field-${field.id}`}
+      className={classnames(styles.container, { [styles.focused]: focused })}
+    >
+      {focused && <View className={styles.focusedBadge}>📍 请修改此项</View>}
       <View className={styles.questionRow}>
         <Text className={styles.question}>{field.question}</Text>
         {field.required && <Text className={styles.required}>*</Text>}

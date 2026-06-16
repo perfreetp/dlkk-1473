@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { View, Text, Image } from '@tarojs/components';
 import classnames from 'classnames';
 import type { Material } from '@/types/inspection';
@@ -8,10 +8,17 @@ interface MaterialItemProps {
   material: Material;
   onStatusChange: (id: string, status: 'pending' | 'done' | 'missing') => void;
   onVoiceTip: (tip: string) => void;
+  focused?: boolean;
 }
 
-const MaterialItem: React.FC<MaterialItemProps> = ({ material, onStatusChange, onVoiceTip }) => {
+const MaterialItem: React.FC<MaterialItemProps> = ({ material, onStatusChange, onVoiceTip, focused }) => {
   const [expanded, setExpanded] = useState(false);
+
+  useEffect(() => {
+    if (focused) {
+      setExpanded(true);
+    }
+  }, [focused]);
 
   const statusLabels: Record<string, string> = {
     done: '已准备',
@@ -20,7 +27,8 @@ const MaterialItem: React.FC<MaterialItemProps> = ({ material, onStatusChange, o
   };
 
   return (
-    <View className={styles.container}>
+    <View id={`material-${material.id}`} className={classnames(styles.container, { [styles.focused]: focused })}>
+      {focused && <View className={styles.focusedBadge}>📍 待修改</View>}
       <View className={styles.header} onClick={() => setExpanded(!expanded)}>
         <View className={styles.headerLeft}>
           <Text className={styles.name}>{material.name}</Text>

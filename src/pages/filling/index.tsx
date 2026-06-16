@@ -18,6 +18,8 @@ const FillingPage: React.FC = () => {
     voiceEnabled,
     setSubmissionStatus,
     submissionStatus,
+    focusedFieldId,
+    setFocusedFieldId,
   } = useInspectionStore();
 
   const [showSuccess, setShowSuccess] = useState(false);
@@ -27,6 +29,27 @@ const FillingPage: React.FC = () => {
       setShowSuccess(true);
     }
   }, [submissionStatus]);
+
+  useEffect(() => {
+    if (focusedFieldId) {
+      const index = formFields.findIndex((f) => f.id === focusedFieldId);
+      if (index >= 0) {
+        setCurrentQuestionIndex(index);
+        setTimeout(() => {
+          Taro.showToast({
+            title: `📍 请修改「${formFields[index].question.replace(/\*/g, '').slice(0, 12)}」`,
+            icon: 'none',
+            duration: 2500,
+          });
+        }, 300);
+        setTimeout(() => {
+          setFocusedFieldId(null);
+        }, 5000);
+      } else {
+        setFocusedFieldId(null);
+      }
+    }
+  }, [focusedFieldId]);
 
   const totalFields = formFields.length;
   const answeredCount = Object.keys(formAnswers).filter(
@@ -197,6 +220,7 @@ const FillingPage: React.FC = () => {
             onChange={updateFormAnswer}
             onVoiceTip={handleVoiceTip}
             error={error}
+            focused={focusedFieldId === currentField.id}
           />
         </View>
       )}

@@ -19,9 +19,11 @@ const ProgressPage: React.FC = () => {
     setSubmissionStatus,
     setRejectedItems,
     rejectedItems,
-    clearRejectedItem,
     materialStatus,
     submitDate,
+    setFocusedMaterialId,
+    setFocusedFieldId,
+    clearAllRejected,
   } = useInspectionStore();
 
   const status = submissionStatus;
@@ -74,32 +76,40 @@ const ProgressPage: React.FC = () => {
 
   const handleFixItem = (fieldId: string) => {
     const isFormField = fieldId.startsWith('f');
-    clearRejectedItem(fieldId);
+
     if (isFormField) {
       const index = formFields.findIndex((f) => f.id === fieldId);
       if (index >= 0) {
+        setFocusedFieldId(fieldId);
         useInspectionStore.getState().setCurrentQuestionIndex(index);
       }
       Taro.switchTab({ url: '/pages/filling/index' }).catch((err) => {
         console.error('[ProgressPage] Navigation error:', err);
       });
     } else {
+      setFocusedMaterialId(fieldId);
       Taro.switchTab({ url: '/pages/materials/index' }).catch((err) => {
         console.error('[ProgressPage] Navigation error:', err);
       });
     }
+
+    Taro.showToast({
+      title: '✏️ 请在修改后重新提交',
+      icon: 'none',
+      duration: 1500,
+    });
   };
 
   const handleResubmit = () => {
     Taro.showModal({
       title: '📤 确认重新提交',
-      content: '修改完成后，确认重新提交年检申报吗？重新提交后退回项将清空。',
+      content: '所有退回项均已修改完成，确认重新提交年检申报吗？',
       confirmText: '确认提交',
       cancelText: '再检查',
       success: (res) => {
         if (res.confirm) {
+          clearAllRejected();
           setSubmissionStatus('submitted');
-          setRejectedItems([]);
           Taro.showToast({ title: '✅ 重新提交成功', icon: 'none', duration: 2000 });
         }
       },

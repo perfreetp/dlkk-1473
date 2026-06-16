@@ -1,4 +1,4 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useEffect } from 'react';
 import { View, Text } from '@tarojs/components';
 import Taro from '@tarojs/taro';
 import { materials, materialCategories } from '@/data/materials';
@@ -9,7 +9,49 @@ import styles from './index.module.scss';
 
 const MaterialsPage: React.FC = () => {
   const [activeCategory, setActiveCategory] = useState<string>('全部');
-  const { materialStatus, updateMaterialStatus, voiceEnabled } = useInspectionStore();
+  const {
+    materialStatus,
+    updateMaterialStatus,
+    voiceEnabled,
+    focusedMaterialId,
+    setFocusedMaterialId,
+  } = useInspectionStore();
+
+  useEffect(() => {
+    if (focusedMaterialId) {
+      const target = materials.find((m) => m.id === focusedMaterialId);
+      if (target) {
+        setActiveCategory(target.category);
+        setTimeout(() => {
+          Taro.createSelectorQuery()
+            .select(`#material-${focusedMaterialId}`)
+            .boundingClientRect()
+            .selectViewport()
+            .scrollOffset()
+            .exec((res) => {
+              if (res && res[0] && res[1]) {
+                const rect = res[0];
+                const scrollTop = res[1].scrollTop;
+                Taro.pageScrollTo({
+                  scrollTop: scrollTop + rect.top - 120,
+                  duration: 500,
+                });
+              }
+            });
+          Taro.showToast({
+            title: `📍 请修改「${target.name}」`,
+            icon: 'none',
+            duration: 2500,
+          });
+        }, 300);
+        setTimeout(() => {
+          setFocusedMaterialId(null);
+        }, 5000);
+      } else {
+        setFocusedMaterialId(null);
+      }
+    }
+  }, [focusedMaterialId]);
 
   const enrichedMaterials = useMemo(() => {
     return materials.map((m) => ({
@@ -106,6 +148,7 @@ const MaterialsPage: React.FC = () => {
             material={material}
             onStatusChange={updateMaterialStatus}
             onVoiceTip={handleVoiceTip}
+            focused={focusedMaterialId === material.id}
           />
         ))}
       </View>

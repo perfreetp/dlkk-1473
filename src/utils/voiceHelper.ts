@@ -4,6 +4,14 @@ import { useInspectionStore } from '@/store/useInspectionStore';
 let innerAudioContext: Taro.InnerAudioContext | null = null;
 let currentToastTimer: ReturnType<typeof setTimeout> | null = null;
 
+const getRate = (): number => {
+  const speed = useInspectionStore.getState().voiceSpeed;
+  return speed === 'slow' ? 0.75 : 1.0;
+};
+
+const isH5 = Taro.getEnv() === Taro.ENV_TYPE.WEB;
+const isWeapp = Taro.getEnv() === Taro.ENV_TYPE.WEAPP;
+
 const showPlayingToast = (text: string, durationMs: number) => {
   if (currentToastTimer) clearTimeout(currentToastTimer);
   const startTime = Date.now();
@@ -27,6 +35,12 @@ const hidePlayingToast = () => {
     clearTimeout(currentToastTimer);
     currentToastTimer = null;
   }
+  Taro.hideToast();
+};
+
+const estimateDuration = (text: string, rate: number): number => {
+  const charsPerSecond = rate < 1 ? 2.5 : 3.5;
+  return Math.max(3000, (text.length / charsPerSecond) * 1000);
 };
 
 const webSpeechSpeak = (text: string, rate: number): Promise<boolean> => {
@@ -46,10 +60,12 @@ const webSpeechSpeak = (text: string, rate: number): Promise<boolean> => {
       utter.volume = 1;
 
       const voices = synth.getVoices();
-      const zhVoice = voices.find((v) => v.lang && v.lang.toLowerCase().startsWith('zh'));
+      const zhVoice = voices.find(
+        (v) => v.lang && (v.lang.toLowerCase().startsWith('zh-cn') || v.lang.toLowerCase().startsWith('zh'))
+      );
       if (zhVoice) utter.voice = zhVoice;
 
-      const estDurationMs = Math.max(3000, text.length * 220 / rate);
+      const estDurationMs = estimateDuration(text, rate);
       utter.onstart = () => {
         showPlayingToast(text, estDurationMs);
       };
@@ -66,7 +82,8 @@ const webSpeechSpeak = (text: string, rate: number): Promise<boolean> => {
 
       setTimeout(() => {
         hidePlayingToast();
-      }, estDurationMs + 500);
+        resolve(true);
+      }, estDurationMs + 1000);
     } catch (err) {
       console.error('[VoiceHelper] Web Speech API error:', err);
       resolve(false);
@@ -74,27 +91,103 @@ const webSpeechSpeak = (text: string, rate: number): Promise<boolean> => {
   });
 };
 
-const getRate = (): number => {
-  const speed = useInspectionStore.getState().voiceSpeed;
-  return speed === 'slow' ? 0.75 : 1.0;
+const getTTSAudioUrl = (text: string): string => {
+  const encoded = encodeURIComponent(text);
+  return `https://dict.youdao.com/dictvoice?type=2&audio=${encoded}`;
+};
+
+const audioPlay = (text: string, rate: number): Promise<boolean> => {
+  return new Promise((resolve) => {
+    try {
+      if (innerAudioContext) {
+        innerAudioContext.stop();
+        innerAudioContext.destroy();
+      }
+
+      const ctx = Taro.createInnerAudioContext();
+      innerAudioContext = ctx;
+      ctx.src = getTTSAudioUrl(text);
+
+      if (isWeapp) {
+        try {
+          (ctx as any).playbackRate = rate;
+        } catch (e) {
+          console.warn('[VoiceHelper] playbackRate not supported');
+        }
+      }
+
+      const estDurationMs = estimateDuration(text, rate);
+      let started = false;
+
+      ctx.onPlay(() => {
+        started = true;
+        showPlayingToast(text, estDurationMs);
+        console.info('[VoiceHelper] Audio started playing');
+      });
+
+      ctx.onEnded(() => {
+        hidePlayingToast();
+        resolve(true);
+      });
+
+      ctx.onStop(() => {
+        hidePlayingToast();
+        resolve(true);
+      });
+
+      ctx.onError((err) => {
+        console.error('[VoiceHelper] Audio error:', err);
+        hidePlayingToast();
+        resolve(false);
+      });
+
+      ctx.play();
+
+      setTimeout(() => {
+        if (!started) {
+          console.warn('[VoiceHelper] Audio timeout, fallback to toast');
+          hidePlayingToast();
+          const duration = estimateDuration(text, rate);
+          showPlayingToast(text, duration);
+          setTimeout(hidePlayingToast, duration);
+          resolve(false);
+        }
+      }, 8000);
+
+      setTimeout(() => {
+        hidePlayingToast();
+        resolve(true);
+      }, estDurationMs + 2000);
+    } catch (err) {
+      console.error('[VoiceHelper] Audio play error:', err);
+      resolve(false);
+    }
+  });
 };
 
 export const playVoiceTip = async (text: string): Promise<boolean> => {
   const state = useInspectionStore.getState();
   if (!state.voiceEnabled) {
     console.info('[VoiceHelper] Voice disabled, skip playing');
+    Taro.showToast({
+      title: '🔇 语音已关闭',
+      icon: 'none',
+      duration: 1000,
+    });
     return false;
   }
 
-  console.info('[VoiceHelper] Playing voice tip (rate=' + getRate() + '):', text.substring(0, 40) + '...');
+  const rate = getRate();
+  const speedLabel = rate < 1 ? '慢速' : '正常';
+  console.info(`[VoiceHelper] Playing (${speedLabel}, rate=${rate}):`, text.substring(0, 30) + '...');
 
-  const ok = await webSpeechSpeak(text, getRate());
-  if (!ok) {
-    const duration = Math.max(2000, text.length * 250 / getRate());
-    showPlayingToast(text, duration);
-    setTimeout(hidePlayingToast, duration);
+  if (isH5) {
+    const ok = await webSpeechSpeak(text, rate);
+    if (ok) return true;
+    return audioPlay(text, rate);
   }
-  return true;
+
+  return audioPlay(text, rate);
 };
 
 export const stopVoice = (): void => {
@@ -104,6 +197,10 @@ export const stopVoice = (): void => {
     }
     if (innerAudioContext) {
       innerAudioContext.stop();
+      try {
+        innerAudioContext.destroy();
+      } catch (e) {}
+      innerAudioContext = null;
     }
     hidePlayingToast();
   } catch (err) {
@@ -115,17 +212,24 @@ export const playFAQVoice = async (question: string, answer: string): Promise<bo
   const state = useInspectionStore.getState();
   if (!state.voiceEnabled) {
     console.info('[VoiceHelper] Voice disabled, skip FAQ');
+    Taro.showToast({
+      title: '🔇 语音已关闭',
+      icon: 'none',
+      duration: 1000,
+    });
     return false;
   }
 
-  const combined = `你的问题是：${question}。回答：${answer}`;
-  console.info('[VoiceHelper] Playing FAQ voice:', question);
+  const combined = `问题：${question}。${answer}`;
+  const rate = getRate();
+  const speedLabel = rate < 1 ? '慢速' : '正常';
+  console.info(`[VoiceHelper] Playing FAQ (${speedLabel}, rate=${rate}):`, question);
 
-  const ok = await webSpeechSpeak(combined, getRate());
-  if (!ok) {
-    const duration = Math.max(3000, combined.length * 250 / getRate());
-    showPlayingToast(combined, duration);
-    setTimeout(hidePlayingToast, duration);
+  if (isH5) {
+    const ok = await webSpeechSpeak(combined, rate);
+    if (ok) return true;
+    return audioPlay(combined, rate);
   }
-  return true;
+
+  return audioPlay(combined, rate);
 };

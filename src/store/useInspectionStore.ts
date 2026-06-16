@@ -13,6 +13,8 @@ interface InspectionState {
   voiceEnabled: boolean;
   voiceSpeed: 'slow' | 'normal';
   submitDate: string | null;
+  focusedMaterialId: string | null;
+  focusedFieldId: string | null;
 
   updateMaterialStatus: (id: string, status: 'pending' | 'done' | 'missing') => void;
   updateFormAnswer: (id: string, value: string) => void;
@@ -22,6 +24,11 @@ interface InspectionState {
   toggleVoice: () => void;
   setVoiceSpeed: (speed: 'slow' | 'normal') => void;
   clearRejectedItem: (fieldId: string) => void;
+  setFocusedMaterialId: (id: string | null) => void;
+  setFocusedFieldId: (id: string | null) => void;
+  clearRejectedForMaterial: (materialId: string) => void;
+  clearRejectedForField: (fieldId: string) => void;
+  clearAllRejected: () => void;
   hydrateFromStorage: () => void;
 }
 
@@ -43,7 +50,23 @@ const initialMaterialStatus: Record<string, 'pending' | 'done' | 'missing'> = {
   m15: 'pending',
 };
 
-type PersistableState = Omit<InspectionState, keyof Omit<InspectionState, keyof InspectionState>>;
+type PersistableState = Omit<
+  InspectionState,
+  | 'updateMaterialStatus'
+  | 'updateFormAnswer'
+  | 'setCurrentQuestionIndex'
+  | 'setSubmissionStatus'
+  | 'setRejectedItems'
+  | 'toggleVoice'
+  | 'setVoiceSpeed'
+  | 'clearRejectedItem'
+  | 'setFocusedMaterialId'
+  | 'setFocusedFieldId'
+  | 'clearRejectedForMaterial'
+  | 'clearRejectedForField'
+  | 'clearAllRejected'
+  | 'hydrateFromStorage'
+>;
 
 const loadFromStorage = (): Partial<PersistableState> => {
   try {
@@ -89,12 +112,20 @@ export const useInspectionStore = create<InspectionState>((set, get) => {
     voiceEnabled: saved.voiceEnabled ?? true,
     voiceSpeed: saved.voiceSpeed ?? 'slow',
     submitDate: saved.submitDate ?? null,
+    focusedMaterialId: null,
+    focusedFieldId: null,
 
     updateMaterialStatus: (id, status) =>
       set((state) => {
+        const nextRejected =
+          status === 'done'
+            ? state.rejectedItems.filter((r) => r.fieldId !== id)
+            : state.rejectedItems;
+
         const next = {
           ...state,
           materialStatus: { ...state.materialStatus, [id]: status },
+          rejectedItems: nextRejected,
         };
         saveToStorage(next);
         return next;
@@ -102,9 +133,19 @@ export const useInspectionStore = create<InspectionState>((set, get) => {
 
     updateFormAnswer: (id, value) =>
       set((state) => {
+        const trimmed = value?.trim() || '';
+        const wasEmpty = !state.formAnswers[id]?.trim();
+        const nowHasValue = !!trimmed;
+
+        let nextRejected = state.rejectedItems;
+        if (wasEmpty && nowHasValue) {
+          nextRejected = state.rejectedItems.filter((r) => r.fieldId !== id);
+        }
+
         const next = {
           ...state,
           formAnswers: { ...state.formAnswers, [id]: value },
+          rejectedItems: nextRejected,
         };
         saveToStorage(next);
         return next;
@@ -158,6 +199,36 @@ export const useInspectionStore = create<InspectionState>((set, get) => {
           ...state,
           rejectedItems: state.rejectedItems.filter((r) => r.fieldId !== fieldId),
         };
+        saveToStorage(next);
+        return next;
+      }),
+
+    setFocusedMaterialId: (id) => set({ focusedMaterialId: id }),
+    setFocusedFieldId: (id) => set({ focusedFieldId: id }),
+
+    clearRejectedForMaterial: (materialId) =>
+      set((state) => {
+        const next = {
+          ...state,
+          rejectedItems: state.rejectedItems.filter((r) => r.fieldId !== materialId),
+        };
+        saveToStorage(next);
+        return next;
+      }),
+
+    clearRejectedForField: (fieldId) =>
+      set((state) => {
+        const next = {
+          ...state,
+          rejectedItems: state.rejectedItems.filter((r) => r.fieldId !== fieldId),
+        };
+        saveToStorage(next);
+        return next;
+      }),
+
+    clearAllRejected: () =>
+      set((state) => {
+        const next = { ...state, rejectedItems: [] };
         saveToStorage(next);
         return next;
       }),

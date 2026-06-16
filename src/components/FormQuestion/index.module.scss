@@ -5,6 +5,38 @@
   border-radius: $radius-lg;
   padding: $spacing-xl;
   box-shadow: $shadow-card;
+  position: relative;
+  transition: all 0.3s ease;
+}
+
+.container.focused {
+  border: 6rpx solid $color-accent;
+  box-shadow: 0 0 0 8rpx rgba($color-accent, 0.15), $shadow-card;
+  animation: pulseHighlight 1.8s ease-in-out 3;
+  transform: scale(1.02);
+}
+
+@keyframes pulseHighlight {
+  0%, 100% {
+    box-shadow: 0 0 0 8rpx rgba($color-accent, 0.15), $shadow-card;
+  }
+  50% {
+    box-shadow: 0 0 0 16rpx rgba($color-accent, 0.25), $shadow-card;
+  }
+}
+
+.focusedBadge {
+  position: absolute;
+  top: 0;
+  right: 24rpx;
+  background: $color-accent;
+  color: $color-text-white;
+  font-size: $font-size-sm;
+  font-weight: $font-weight-semibold;
+  padding: 8rpx 24rpx 8rpx;
+  border-bottom-left-radius: $radius-md;
+  border-bottom-right-radius: $radius-md;
+  z-index: 10;
 }
 
 .questionRow {
