@@ -66,6 +66,11 @@ export interface SubmissionInfo {
   completedItems: number;
   contactPhone: string;
   contactAddress: string;
+  reviewerName: string;
+  reviewerPhone: string;
+  reviewerOfficeHours: string;
+  reviewNote: string;
+  onSiteNote: string;
 }
 
 export interface RejectedItem {

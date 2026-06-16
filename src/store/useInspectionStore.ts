@@ -133,12 +133,12 @@ export const useInspectionStore = create<InspectionState>((set, get) => {
 
     updateFormAnswer: (id, value) =>
       set((state) => {
-        const trimmed = value?.trim() || '';
-        const wasEmpty = !state.formAnswers[id]?.trim();
-        const nowHasValue = !!trimmed;
+        const oldValue = state.formAnswers[id]?.trim() || '';
+        const newValue = value?.trim() || '';
+        const hasChanged = oldValue !== newValue;
 
         let nextRejected = state.rejectedItems;
-        if (wasEmpty && nowHasValue) {
+        if (hasChanged) {
           nextRejected = state.rejectedItems.filter((r) => r.fieldId !== id);
         }
 

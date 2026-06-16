@@ -3,6 +3,7 @@ import { View, Text } from '@tarojs/components';
 import Taro from '@tarojs/taro';
 import { inspectionInfo } from '@/data/inspectionInfo';
 import StepGuide from '@/components/StepGuide';
+import FamilyChecklist from '@/components/FamilyChecklist';
 import styles from './index.module.scss';
 
 const HomePage: React.FC = () => {
@@ -55,6 +56,10 @@ const HomePage: React.FC = () => {
               </View>
             ))}
           </View>
+        </View>
+
+        <View className={styles.section}>
+          <FamilyChecklist />
         </View>
 
         <View className={styles.section}>

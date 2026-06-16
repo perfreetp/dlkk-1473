@@ -20,6 +20,7 @@ const ProgressPage: React.FC = () => {
     setRejectedItems,
     rejectedItems,
     materialStatus,
+    formAnswers,
     submitDate,
     setFocusedMaterialId,
     setFocusedFieldId,
@@ -33,6 +34,19 @@ const ProgressPage: React.FC = () => {
     () => Object.values(materialStatus).filter((s) => s === 'done').length,
     [materialStatus]
   );
+
+  const allRejectedFixed = useMemo(() => {
+    if (rejectedItems.length === 0) return true;
+    return rejectedItems.every((item) => {
+      const fieldId = item.fieldId;
+      if (fieldId.startsWith('m')) {
+        return materialStatus[fieldId] === 'done';
+      } else {
+        const originalAnswer = formAnswers[fieldId]?.trim() || '';
+        return !!originalAnswer;
+      }
+    });
+  }, [rejectedItems, materialStatus, formAnswers]);
 
   const statusConfig: Record<
     string,
@@ -94,13 +108,36 @@ const ProgressPage: React.FC = () => {
     }
 
     Taro.showToast({
-      title: '✏️ 请在修改后重新提交',
+      title: '✏️ 请修改此项',
       icon: 'none',
       duration: 1500,
     });
   };
 
+  const handleCallPhone = (phone: string) => {
+    Taro.makePhoneCall({
+      phoneNumber: phone,
+    }).catch((err) => {
+      console.error('[ProgressPage] Call error:', err);
+      Taro.showToast({
+        title: `请手动拨打 ${phone}`,
+        icon: 'none',
+        duration: 2000,
+      });
+    });
+  };
+
   const handleResubmit = () => {
+    if (!allRejectedFixed) {
+      const remaining = rejectedItems.length;
+      Taro.showToast({
+        title: `还有 ${remaining} 项未修改`,
+        icon: 'none',
+        duration: 2000,
+      });
+      return;
+    }
+
     Taro.showModal({
       title: '📤 确认重新提交',
       content: '所有退回项均已修改完成，确认重新提交年检申报吗？',
@@ -258,29 +295,122 @@ const ProgressPage: React.FC = () => {
           </View>
         )}
 
+        {status === 'rejected' && (
+          <View className={styles.communicationCard}>
+            <Text className={styles.communicationTitle}>💬 审核老师沟通</Text>
+            <View className={styles.communicationNote}>
+              <Text className={styles.communicationNoteText}>{info.reviewNote}</Text>
+            </View>
+            <View className={styles.communicationInfo}>
+              <Text className={styles.communicationIcon}>👩‍💼</Text>
+              <Text className={styles.communicationText}>负责老师：{info.reviewerName}</Text>
+            </View>
+            <View className={styles.communicationInfo}>
+              <Text className={styles.communicationIcon}>📱</Text>
+              <Text className={styles.communicationText}>{info.reviewerPhone}</Text>
+              <View
+                className={styles.communicationPhoneBtn}
+                onClick={() => handleCallPhone(info.reviewerPhone)}
+              >
+                <Text className={styles.communicationPhoneText}>📞 拨号</Text>
+              </View>
+            </View>
+            <View className={styles.communicationInfo}>
+              <Text className={styles.communicationIcon}>🕐</Text>
+              <Text className={styles.communicationText}>{info.reviewerOfficeHours}</Text>
+            </View>
+            <View className={styles.communicationOnSite}>
+              <Text className={styles.communicationOnSiteText}>💡 {info.onSiteNote}</Text>
+            </View>
+          </View>
+        )}
+
+        {(status === 'submitted' || status === 'approved') && (
+          <View className={styles.communicationCard}>
+            <Text className={styles.communicationTitle}>📍 现场办理提示</Text>
+            <View className={styles.communicationOnSite}>
+              <Text className={styles.communicationOnSiteText}>
+                {status === 'approved'
+                  ? `年检已通过！请携带所有材料原件到${info.contactAddress}完成最终确认。有问题可拨打咨询电话。`
+                  : '审核期间如有疑问，可拨打咨询电话或携带材料到现场，工作人员会协助您处理。'}
+              </Text>
+            </View>
+            <View className={styles.communicationInfo}>
+              <Text className={styles.communicationIcon}>📞</Text>
+              <Text className={styles.communicationText}>{info.contactPhone}</Text>
+              <View
+                className={styles.communicationPhoneBtn}
+                onClick={() => handleCallPhone(info.contactPhone)}
+              >
+                <Text className={styles.communicationPhoneText}>拨号</Text>
+              </View>
+            </View>
+            <View className={styles.communicationInfo}>
+              <Text className={styles.communicationIcon}>📍</Text>
+              <Text className={styles.communicationText}>{info.contactAddress}</Text>
+            </View>
+            <View className={styles.communicationInfo}>
+              <Text className={styles.communicationIcon}>🕐</Text>
+              <Text className={styles.communicationText}>{info.reviewerOfficeHours}</Text>
+            </View>
+          </View>
+        )}
+
         {status === 'rejected' && rejectedItems.length > 0 && (
           <View className={styles.rejectedCard}>
             <Text className={styles.rejectedTitle}>
-              ⚠️ 退回原因及修改建议（共{rejectedItems.length}项）
+              ⚠️ 退回原因及修改建议（共{rejectedItems.length}项，{rejectedItems.filter((r) => {
+                if (r.fieldId.startsWith('m')) return materialStatus[r.fieldId] === 'done';
+                return !!formAnswers[r.fieldId]?.trim();
+              }).length}项已修改）
             </Text>
-            {rejectedItems.map((item) => (
-              <View key={item.fieldId} className={styles.rejectedItem}>
-                <Text className={styles.rejectedIcon}>❌</Text>
-                <View className={styles.rejectedInfo}>
-                  <Text className={styles.rejectedFieldName}>{item.fieldName}</Text>
-                  <Text className={styles.rejectedReason}>{item.reason}</Text>
+            {rejectedItems.map((item) => {
+              const isFixed = item.fieldId.startsWith('m')
+                ? materialStatus[item.fieldId] === 'done'
+                : !!formAnswers[item.fieldId]?.trim();
+              return (
+                <View key={item.fieldId} className={styles.rejectedItem}>
+                  <Text className={styles.rejectedIcon}>{isFixed ? '✅' : '❌'}</Text>
+                  <View className={styles.rejectedInfo}>
+                    <Text
+                      className={styles.rejectedFieldName}
+                      style={{ opacity: isFixed ? 0.5 : 1, textDecoration: isFixed ? 'line-through' : 'none' }}
+                    >
+                      {item.fieldName}
+                      {isFixed && '（已修改）'}
+                    </Text>
+                    <Text className={styles.rejectedReason}>{item.reason}</Text>
+                  </View>
+                  {!isFixed && (
+                    <View
+                      className={styles.rejectedAction}
+                      onClick={() => handleFixItem(item.fieldId)}
+                    >
+                      <Text className={styles.rejectedActionText}>去修改</Text>
+                    </View>
+                  )}
                 </View>
-                <View
-                  className={styles.rejectedAction}
-                  onClick={() => handleFixItem(item.fieldId)}
-                >
-                  <Text className={styles.rejectedActionText}>去修改</Text>
-                </View>
+              );
+            })}
+            {allRejectedFixed ? (
+              <View className={styles.resubmitBtn} onClick={handleResubmit}>
+                <Text className={styles.resubmitBtnText}>✅ 改完了，重新提交</Text>
               </View>
-            ))}
-            <View className={styles.resubmitBtn} onClick={handleResubmit}>
-              <Text className={styles.resubmitBtnText}>✅ 改完了，重新提交</Text>
-            </View>
+            ) : (
+              <>
+                <View className={styles.submitDisabled}>
+                  <Text className={styles.submitDisabledText}>
+                    还有 {rejectedItems.filter((r) => {
+                      if (r.fieldId.startsWith('m')) return materialStatus[r.fieldId] !== 'done';
+                      return !formAnswers[r.fieldId]?.trim();
+                    }).length} 项待修改
+                  </Text>
+                </View>
+                <Text className={styles.fixHint}>
+                  请先将所有退回项修改完成，修改后"重新提交"按钮会自动亮起
+                </Text>
+              </>
+            )}
           </View>
         )}
 
